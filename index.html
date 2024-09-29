@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Jump Game</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div>
+            <div id="overlay-div">
+                <div id="game-story">
+                    <h1>Escape from the Mothership</h1>
+                    <div class="css-typing">
+                        <p>
+                            The green orbs hovered above the field, their eerie
+                            glow casting long shadows.
+                        </p>
+                        <p>
+                            A gust of wind swept through the air, carrying with
+                            it a faint, metallic scent.
+                        </p>
+                        <p>
+                            Before he could react, a tractor beam pulled him up
+                            into the alien craft.
+                        </p>
+                        <p>
+                            As he looked out the window, he saw his farm, his
+                            home, his life, shrinking below.
+                        </p>
+                        <p>
+                            A voice crackled through the speakers, "Welcome to
+                            our world."
+                        </p>
+                        <p>What would he do now?</p>
+                    </div>
+                    <div id="choice-button">
+                        <button>Run</button>
+                        <button>fight</button>
+                    </div>
+                </div>
+            </div>
+            <div id="game-over">
+                <h1>Game Over</h1>
+                <div class="css-typing">
+                    <p>Unfortunately you can't escape.</p>
+                    <p id="score-para">You could only run 0m away.</p>
+                    <p>Take on the fight again?</p>
+                </div>
+                <div id="choice-button">
+                    <button>Run</button>
+                    <button>Fight</button>
+                </div>
+            </div>
+            <canvas id="canvas" width="1920" height="1200">
+                <h2 id="score">Score: 0</h2>
+                <img
+                    src="./gameAssets/alienRun.png"
+                    alt=""
+                    id="alien"
+                    height="192"
+                    width="192"
+                />
+                <img
+                    src="./gameAssets/Run.png"
+                    alt=""
+                    id="player"
+                    height="128"
+                    width="1280"
+                />
+                <img src="./gameAssets/City3_pale.png" alt="" id="background" />
+            </canvas>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
