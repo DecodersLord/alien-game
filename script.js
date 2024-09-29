@@ -24,6 +24,8 @@ let frameHeightAlien;
 
 let presetTimeValue;
 
+//Audio Files
+
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -311,5 +313,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 SetupRunning();
             }, 200);
         });
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    let bgAudio = new Audio("./gameAssets/gameBg.mp3");
+    bgAudio.loop = true; // Enable looping
+
+    // Attempt to play the audio
+    bgAudio.play().catch((error) => {
+        console.log("Autoplay was prevented. Click to play the audio.");
+        // Add a click event listener to play the audio when the user interacts with the page
+        document.addEventListener(
+            "click",
+            function () {
+                bgAudio.play();
+            },
+            { once: true }
+        ); // Ensure the event listener is only triggered once
     });
 });
