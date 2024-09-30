@@ -29,7 +29,7 @@ export default class fightingAlien extends Alien {
 
         let totalFrames = this.numColumnsAlien * this.numRowsAlien - 2;
 
-        currentFrame = currentFrame % totalFrames;
+        currentFrame = (currentFrame + 500) % totalFrames;
 
         // Update rows and columns
         let column = currentFrame % this.numColumnsAlien;
