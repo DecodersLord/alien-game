@@ -31,7 +31,7 @@ body {
     bottom: 0;
     font-weight: 500;
     color: rgb(211, 52, 52);
-    background-image: url(./gameAssets/City3_pale.png);
+    background-image: url(./gameAssets/background.png);
 }
 
 #game-over {
@@ -148,7 +148,7 @@ body {
     align-items: center;
     opacity: 0; /* Start hidden */
     animation: fadeIn 1s forwards;
-    animation-delay: 15s; /* Delay the appearance by 10 seconds */
+    animation-delay: 2s; /* Delay the appearance by 10 seconds */
     gap: 25px;
 }
 

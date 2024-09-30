@@ -1,20 +1,25 @@
+import background_image from "./background_image.js";
+import Player from "./player.js";
+import runningAlien from "./RunningAlien.js";
+import fightingAlien from "./FightingAlien.js";
+import aliensColliding from "./checkCollision.js";
+import gameOver from "./gameOver.js";
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-let playerImg = document.getElementById("player");
-let alienImg = document.getElementById("alien");
-let bgImg = document.getElementById("background");
-let gameOverElement = document.getElementById("game-over");
+
+let playerImg;
+let alienImg;
+let bgImg = background_image("background.png");
 let scoreElement = document.getElementById("score-para");
+let gameOverElement = document.getElementById("game-over");
 
 let numColumns;
 let numRows;
-let frameWidth;
-let frameHeight;
-let row;
-let column;
 let currentFrame;
 
-let gameStarted;
+let runnerGameStarted;
+let fightingGameStarted;
 
 //alien Spritesheet animation
 let numColumnsAlien;
@@ -24,6 +29,16 @@ let frameHeightAlien;
 
 let presetTimeValue;
 
+let score = 0;
+
+let player;
+let alienArray = [];
+let alien;
+
+let alienGeneratingTimeout;
+let alienSpacingTimeout;
+
+let timeDelay = randomNumberInterval(presetTimeValue);
 //Audio Files
 
 function getRandomNumber(min, max) {
@@ -45,162 +60,49 @@ function randomNumberInterval(timeInterval) {
     return returnTime;
 }
 
+function generateAliens() {
+    alien = new runningAlien(
+        2050,
+        700,
+        300,
+        numColumnsAlien,
+        numRowsAlien,
+        0,
+        0,
+        0,
+        alienImg
+    );
+    alienArray.push(alien);
+}
+function generateAliensWithSpacing() {
+    generateAliens();
+    timeDelay = randomNumberInterval(presetTimeValue);
+    alienSpacingTimeout = setTimeout(generateAliensWithSpacing, timeDelay);
+}
+function startGeneratingAliens() {
+    if (runnerGameStarted) {
+        let initialTimeDelay = randomNumberInterval(presetTimeValue);
+        alienGeneratingTimeout = setTimeout(
+            generateAliensWithSpacing(),
+            initialTimeDelay
+        );
+    }
+}
+function stopGeneratingAliens() {
+    clearTimeout(alienSpacingTimeout);
+    clearTimeout(alienGeneratingTimeout);
+}
+
 function drawBackground() {
     ctx.drawImage(bgImg, 0, 0, 1920, 1080);
 }
 
-class Player {
-    constructor(x, y, size, color) {
-        this.x = x;
-        this.y = y;
-
-        this.jumpHeight = 80;
-
-        this.shouldJump = false;
-        this.jumpCounter = 0;
-    }
-
-    jump() {
-        if (this.shouldJump) {
-            this.jumpCounter++;
-
-            if (this.jumpCounter < 6) {
-                this.y -= this.jumpHeight;
-            } else if (this.jumpCounter > 6 && this.jumpCounter < 8) {
-                this.y += 0;
-            } else if (this.jumpCounter < 12) {
-                this.y += this.jumpHeight;
-            }
-
-            if (this.jumpCounter >= 12) {
-                this.shouldJump = false;
-            }
-        }
-    }
-
-    draw() {
-        // Update rows and columns
-        let column = currentFrame % numColumns;
-        let row = Math.floor(currentFrame / numColumns);
-        this.jump();
-        ctx.drawImage(
-            playerImg,
-            column * frameWidth,
-            row * frameHeight,
-            frameWidth,
-            frameHeight,
-            this.x,
-            this.y,
-            350,
-            350
-        );
-        //ctx.fillStyle = this.color;
-        //ctx.fillRect(this.x, this.y, this.size, this.size);
-    }
-}
-
-class Alien {
-    constructor(x, y, size, color) {
-        this.x = x;
-        this.y = y;
-        this.size = size;
-        this.color = color;
-
-        this.speed = 50;
-
-        this.shouldJump = false;
-        this.jumpCounter = 0;
-    }
-
-    draw() {
-        // Make the frames loop
-        let maxFrame = numColumnsAlien * numRowsAlien - 2;
-        if (currentFrame > maxFrame) {
-            currentFrame = 0;
-        }
-
-        // Update rows and columns
-        let column = currentFrame % numColumnsAlien;
-        let row = Math.floor(currentFrame / numColumnsAlien);
-        //this.jump();
-        ctx.drawImage(
-            alienImg,
-            column * frameHeightAlien,
-            row * frameHeightAlien,
-            frameWidthAlien,
-            frameHeightAlien,
-            this.x,
-            this.y,
-            300,
-            300
-        );
-
-        //ctx.fillRect(this.x, this.y, this.size, this.size);
-    }
-    slide() {
-        this.draw();
-        this.x -= this.speed;
-    }
-}
-
-let player = new Player(50, 650, 350, "red");
-let alienArray = [];
-let alien;
-
-function generateAliens() {
-    alien = new Alien(2050, 700, 300, "red");
-    alienArray.push(alien);
-}
-
-function aliensColliding(player, alien) {
-    // Create copies of player and alien to avoid modifying originals
-    const playerCopy = { ...player };
-    const alienCopy = { ...alien };
-
-    // Adjust sizes to account for the sprite frames and potential offsets
-    playerCopy.size = frameWidth + frameHeight - 150;
-    alienCopy.size = frameWidthAlien + frameHeightAlien - 150;
-
-    // Calculate bounding box corners for each object
-    const playerLeft = playerCopy.x;
-    const playerRight = playerCopy.x + playerCopy.size;
-    const playerTop = playerCopy.y;
-    const playerBottom = playerCopy.y + playerCopy.size;
-
-    const alienLeft = alienCopy.x;
-    const alienRight = alienCopy.x + alienCopy.size;
-    const alienTop = alienCopy.y;
-    const alienBottom = alienCopy.y + alienCopy.size;
-
-    // Check for collision using bounding box intersection
-    const isColliding = !(
-        playerRight < alienLeft ||
-        playerLeft > alienRight ||
-        playerBottom < alienTop ||
-        playerTop > alienBottom
-    );
-
-    // Check if the collision happens from above the alien
-    const isCollisionFromAbove =
-        playerBottom > alienTop && playerTop < alienTop;
-
-    if (isColliding && isCollisionFromAbove) {
-        return isColliding;
-    }
-}
-
-let timeDelay = randomNumberInterval(presetTimeValue);
-
-function generateAliensWithSpacing() {
-    generateAliens();
-    timeDelay = randomNumberInterval(presetTimeValue);
-    setTimeout(generateAliensWithSpacing, timeDelay);
-}
-
-// Start generating aliens with initial delay
-setTimeout(generateAliensWithSpacing, timeDelay);
-
-let score = 0;
+const PlayerState = {
+    idle: "idle",
+    walk: "walk",
+    attack: "attack",
+    dead: "dead",
+};
 
 function drawScore() {
     const scoreText = "Score: " + score;
@@ -224,13 +126,7 @@ function drawScore() {
     ctx.fillText(scoreText, rectX + padding + 10, rectY + 30);
 }
 
-function gameOver() {
-    alienArray = [];
-    scoreElement.innerText = `You could only run ${score}m away.`;
-    gameOverElement.style.display = "block";
-}
-
-function animate() {
+function animateRun() {
     //requestAnimationFrame(animate);
     //ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -242,14 +138,14 @@ function animate() {
 
     drawBackground();
 
-    player.draw();
+    player.draw(ctx, currentFrame);
     drawScore();
     alienArray.forEach((alien, index) => {
-        alien.slide();
+        alien.slide(ctx, currentFrame, 80);
 
         if (aliensColliding(player, alien)) {
-            gameStarted = false;
-            gameOver();
+            runnerGameStarted = false;
+            gameOver(stopGeneratingAliens, alienArray, scoreElement);
         }
 
         if (alien.x + alien.size <= 0) {
@@ -261,9 +157,26 @@ function animate() {
     });
 }
 
+function animateFight() {
+    //requestAnimationFrame(animateFight);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
+
+    player.draw(ctx);
+    //alien.draw();
+    if (alien.y < 300) {
+        alien.decent();
+    } else {
+        alien.draw();
+    }
+}
+
 setInterval(() => {
-    if (gameStarted) {
-        animate();
+    if (runnerGameStarted) {
+        animateRun();
+    }
+    if (fightingGameStarted) {
+        animateFight();
     }
 }, 100);
 
@@ -278,16 +191,11 @@ addEventListener("keydown", (e) => {
 });
 
 function SetupRunning() {
+    playerImg = document.getElementById("player_Run");
+    alienImg = document.getElementById("alienRun");
     //sprite Animation
-    numColumns = 10;
-    numRows = 1;
-    frameWidth = playerImg.width / numColumns;
-    frameHeight = playerImg.height / numRows;
-    row = 0;
-    column = 0;
     currentFrame = 0;
-
-    gameStarted = true;
+    player = new Player(50, 650, 350, 10, 1, 0, 0, 0, playerImg);
 
     //alien Spritesheet animation
     numColumnsAlien = 3;
@@ -297,8 +205,35 @@ function SetupRunning() {
 
     presetTimeValue = 1000;
     score = 0;
+    timeDelay = randomNumberInterval(presetTimeValue);
     alienArray = [];
-    gameStarted = true;
+    runnerGameStarted = true;
+    startGeneratingAliens();
+}
+
+function setupFight() {
+    playerImg = document.getElementById("player_Idle");
+    alienImg = document.getElementById("idle_alien");
+
+    //alien Spritesheet animation
+    numColumnsAlien = 3;
+    numRowsAlien = 3;
+    frameWidthAlien = alienImg.width / numColumnsAlien;
+    frameHeightAlien = alienImg.height / numRowsAlien;
+    alien = new fightingAlien(650, 150, 800, "red");
+
+    numColumns = 6;
+    numRows = 1;
+    frameWidth = playerImg.width / numColumns;
+    frameHeight = playerImg.height / numRows;
+    row = 0;
+    column = 0;
+    currentFrame = 0;
+    player = new Player(50, 650, 350, "red");
+
+    //alien.decent();
+
+    fightingGameStarted = true;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -308,10 +243,17 @@ document.addEventListener("DOMContentLoaded", function () {
     buttons.forEach((button) => {
         button.addEventListener("click", function () {
             overlayDiv.style.display = "none";
-            setTimeout(() => {
-                gameOverElement.style.display = "none";
-                SetupRunning();
-            }, 200);
+            if (button.textContent === "Run") {
+                setTimeout(() => {
+                    gameOverElement.style.display = "none";
+                    SetupRunning();
+                }, 200);
+            } else if (button.textContent === "fight") {
+                setTimeout(() => {
+                    gameOverElement.style.display = "none";
+                    setupFight();
+                }, 200);
+            }
         });
     });
 });
