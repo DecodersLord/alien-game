@@ -152,15 +152,17 @@ function animateRun() {
 
 function animateFight() {
     //requestAnimationFrame(animateFight);
+    currentFrame++;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBackground();
 
-    player.draw(ctx);
+    player.draw(ctx, currentFrame);
     //alien.draw();
     if (alien.y < 300) {
-        alien.decent();
+        alien.decent(ctx, currentFrame);
     } else {
-        alien.draw();
+        alien.draw(ctx, currentFrame);
     }
 }
 
@@ -213,16 +215,25 @@ function setupFight() {
     numRowsAlien = 3;
     frameWidthAlien = alienImg.width / numColumnsAlien;
     frameHeightAlien = alienImg.height / numRowsAlien;
-    alien = new fightingAlien(650, 150, 800, "red");
 
-    numColumns = 6;
-    numRows = 1;
-    frameWidth = playerImg.width / numColumns;
-    frameHeight = playerImg.height / numRows;
-    row = 0;
-    column = 0;
+    presetTimeValue = 1000;
+    score = 0;
+    timeDelay = randomNumberInterval(presetTimeValue);
+    alienArray = [];
+
     currentFrame = 0;
-    player = new Player(50, 650, 350, "red");
+    player = new Player(50, 650, 350, 6, 1, 0, 0, 0, playerImg);
+    alien = new fightingAlien(
+        650,
+        200,
+        500,
+        numColumnsAlien,
+        numRowsAlien,
+        0,
+        0,
+        0,
+        alienImg
+    );
 
     //alien.decent();
 
