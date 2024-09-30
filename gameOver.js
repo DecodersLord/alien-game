@@ -3,7 +3,8 @@ let gameOverElement = document.getElementById("game-over");
 export default function gameOver(
     stopGeneratingAliens,
     alienArray,
-    scoreElement
+    scoreElement,
+    score
 ) {
     stopGeneratingAliens();
     alienArray = [];

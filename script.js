@@ -97,13 +97,6 @@ function drawBackground() {
     ctx.drawImage(bgImg, 0, 0, 1920, 1080);
 }
 
-const PlayerState = {
-    idle: "idle",
-    walk: "walk",
-    attack: "attack",
-    dead: "dead",
-};
-
 function drawScore() {
     const scoreText = "Score: " + score;
     ctx.font = "26px 'Pixelify Sans'"; // Set font size and family
@@ -145,7 +138,7 @@ function animateRun() {
 
         if (aliensColliding(player, alien)) {
             runnerGameStarted = false;
-            gameOver(stopGeneratingAliens, alienArray, scoreElement);
+            gameOver(stopGeneratingAliens, alienArray, scoreElement, score);
         }
 
         if (alien.x + alien.size <= 0) {
